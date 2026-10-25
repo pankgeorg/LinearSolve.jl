@@ -486,8 +486,12 @@ function __dual_init(
         dual_type = get_dual_type(prob.b)
     end
 
+    # `assumptions` goes as a keyword only: passed positionally too, it lengthened `args` on every
+    # init -> __dual_init -> init round, which inference (when the primal problem's type is not
+    # concrete) follows without converging, one new specialization per length. `__init` never reads
+    # its positional arguments, so the result is unchanged.
     non_partial_cache = init(
-        primal_prob, alg, assumptions, args...;
+        primal_prob, alg, args...;
         alias = alias, abstol = abstol, reltol = reltol,
         maxiters = maxiters, verbose = verbose, Pl = Pl, Pr = Pr, assumptions = assumptions,
         sensealg = sensealg, u0 = new_u0, kwargs...
